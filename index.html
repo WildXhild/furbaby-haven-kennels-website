@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FURBABY HAVEN KENNELS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    html { scroll-behavior: smooth; }
+    body { font-family: Arial, sans-serif; margin:0; background:#f6f6f6; }
+    a { transition: 0.3s; }
+
+    /* HEADER */
+    header {
+      background:#111;
+      color:white;
+      padding:20px 30px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    header img { height:60px; margin-right:15px; }
+    header h1 { margin:0; font-size:24px; }
+    header p { margin:0; font-size:14px; color:#ddd; }
+    nav a { color:white; margin:0 10px; text-decoration:none; font-weight:bold; }
+    nav a:hover { color:#ffcc00; text-decoration:underline; }
+
+    /* PUPPY GRID */
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; padding:30px; }
+    .card { background:white; border-radius:10px; overflow:hidden; position:relative; box-shadow:0 2px 8px rgba(0,0,0,0.1); transition: transform 0.3s, box-shadow 0.3s; cursor:pointer; }
+    .card:hover { transform: translateY(-5px); box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+
+    .card img { width:100%; height:220px; object-fit:cover; border-radius:10px 10px 0 0; }
+
+    .sold { position:absolute; top:10px; left:10px; background:red; color:white; padding:6px 10px; border-radius:5px; font-weight:bold; z-index:2; }
+    .add-to-cart { position:absolute; bottom:10px; right:10px; padding:8px 12px; background:#ffcc00; color:#111; border:none; border-radius:5px; cursor:pointer; font-weight:bold; z-index:2; }
+    .add-to-cart:hover { background:#e6b800; }
+    .added { position:absolute; bottom:10px; right:10px; padding:8px 12px; background:#28a745; color:white; border:none; border-radius:5px; cursor:not-allowed; font-weight:bold; z-index:2; }
+
+    /* FLOATING CART BUTTON */
+    .cart { position:fixed; bottom:20px; right:20px; background:black; color:white; padding:15px 20px; border-radius:50px; font-weight:bold; box-shadow:0 2px 8px rgba(0,0,0,0.3); text-decoration:none; display:flex; align-items:center; }
+    .cart span { margin-left:8px; background:red; color:white; border-radius:50%; padding:2px 8px; font-size:14px; }
+
+    /* SOLD REVIEW OVERLAY */
+    .card-image-wrapper { position: relative; overflow: hidden; border-radius: 10px 10px 0 0; }
+    .review-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 10px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      border-radius: 10px;
+    }
+    .card-image-wrapper:hover img.sold-img { filter: blur(3px); }
+    .card-image-wrapper:hover .review-overlay { opacity: 1; }
+
+    /* INFO SECTIONS */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    .info-section {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+      padding: 30px;
+    }
+    .info-section h2 {
+      color: #111;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .why-item {
+      text-align: center;
+      padding: 20px;
+    }
+    .why-item h3 {
+      color: #ffcc00;
+      margin-bottom: 10px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width:768px){
+      header { flex-direction:column; text-align:center; }
+      nav { margin-top:15px; }
+      .why-grid { grid-template-columns: 1fr; }
+    }
+    /* BANNER SLIDESHOW */
+.banner-container {
+  width: 100%;
+  height: 300px;
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+}
+.banner-slide {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+.banner-slide.active {
+  opacity: 1;
+}
+.banner-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.banner-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+  z-index: 10;
+  width: 80%;
+}
+.banner-text h2 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+.banner-text p {
+  font-size: 1.2rem;
+}
+
+/* Add this to your existing responsive section */
+@media (max-width:768px){
+  .banner-text h2 { font-size: 1.8rem; }
+  .banner-text p { font-size: 1rem; }
+}
+.price {
+  font-weight: bold;
+  color: #ffcc00;
+  font-size: 18px;
+  margin: 5px 0;
+}
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div style="display:flex; align-items:center;">
+    <img src="images/logo.png" alt="FURBABY HAVEN KENNELS Logo">
+    <div>
+      <h1>FURBABY HAVEN KENNELS</h1>
+      <p>Pure breed English Bulldog
+Akc Registered</p>
+    </div>
+  </div>
+  <nav id="top-nav">
+    <a href="#about" class="nav-link">About</a>
+    <a href="#puppies" class="nav-link">Available Puppies</a>
+    <a href="#contact" class="nav-link">Contact</a>
+  </nav>
+</header>
+<!-- BANNER SLIDESHOW -->
+<div class="banner-container" id="banner-slideshow"></div>
+<!-- PUPPY GRID -->
+<div class="grid" id="puppies"></div>
+
+ <!-- WHY CHOOSE US -->
+  <div id="why-choose" class="container info-section">
+    <h2>Why Choose Us</h2>
+    <div class="why-grid">
+      <div class="why-item">
+        <h3>Ethical Breeding</h3>
+        <p>We breed responsibly for healthy puppies.</p>
+      </div>
+      <div class="why-item">
+        <h3>Health Checked</h3>
+        <p>All puppies are vaccinated and vet-checked.</p>
+      </div>
+      <div class="why-item">
+        <h3>Lifetime Support</h3>
+        <p>We support our puppies and owners for life.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <about style=" text-align:center;">
+  <div id="about" class="container info-section">
+    <h2>About Our Kennel</h2>
+    <p>
+     At Furbaby Haven Kennels, we are home-grown
+     English Bulldog specialists breeding bulldogs with care and affection.  
+     and today, our legendary lineage is found in 95% of rare-colored 
+     pedigrees nationwide.
+     Our goal is to produce healthy, high-quality Bulldogs
+     with strong, compact bodies and the best conformation characteristics.
+     By blending iconic bloodlines with a focus on placid, 
+     gentle personalities, we ensure our puppies are the perfect 
+     fit for families. As a global household name, 
+     we ship via puppy nanny to the USA, Australia, UAE, Canada, and beyond. 
+     We are dedicated to producing the best bulldogs for the best families, like yours.
+
+    </p>
+  </div>
+  </about>
+  
+<!-- FOOTER -->
+<footer style="background:#111; color:#fff; padding:30px; text-align:center;">
+  <section id="contact">
+    <h2>Contact Us</h2>
+    <div style="margin-top:15px;">
+      <a href="mailto:furbabyhavenkennels11@gmail.com" style="display:inline-block; background:#ffcc00; color:#111; padding:10px 20px; margin:5px; border-radius:8px; text-decoration:none; font-weight:bold;">Email</a>
+      <a href="https://instagram.com/furbabykennclub" target="_blank" style="display:inline-block; background:#E1306C; color:white; padding:10px 20px; margin:5px; border-radius:8px; text-decoration:none; font-weight:bold;">Instagram</a>
+      <a href="https://tiktok.com/@furbabykennels" target="_blank" style="display:inline-block; background:#000; color:white; padding:10px 20px; margin:5px; border-radius:8px; text-decoration:none; font-weight:bold;">TikTok</a>
+      <a href="sms:+13372181591?body=Hello%20I%20am%20interested%20in%20your%20puppies" style="display:inline-block; background:#25D366; color:white; padding:10px 20px; margin:5px; border-radius:8px; text-decoration:none; font-weight:bold;">Text Us</a>
+    </div>
+    <p style="margin-top:20px; font-size:14px;">© 2025 FURBABY HAVEN KENNELS. Houston, TX📍. All rights reserved.</p>
+  </section>
+</footer>
+
+<!-- FLOATING CART BUTTON -->
+<a href="checkout.html" class="cart">
+  🛒 View Cart
+  <span id="cart-count">0</span>
+</a>
+
+<!-- SCRIPTS -->
+<script src="puppies.js"></script>
+<script>
+  // CART FUNCTIONALITY
+  // BANNER SLIDESHOW
+function initBannerSlideshow() {
+  const bannerContainer = document.getElementById("banner-slideshow");
+  
+  // Slides data - customize these images and texts
+  const slides = [
+    {
+      image: 'images/banner1.jpg',
+      title: 'Isaiah 11:6',
+      text: '“The wolf will live with the lamb, the leopard will lie down with the goat, the calf and the lion and the yearling together; and a little child will lead them.”'
+    },
+    {
+      image: 'images/banner2.jpg',
+      title: 'Job 12:7–10',
+      text: '“Ask the animals, and they will teach you… In his hand is the life of every creature and the breath of all mankind.”'
+    },
+    {
+      image: 'images/banner3.jpg',
+      title: 'Psalm 150:5',
+      text: '"Peter son of Simon, Lovest thou me? Yes lord, Feed my Lambs"'
+    }
+  ];
+  
+  // Create slides
+  slides.forEach((slide, index) => {
+    const slideDiv = document.createElement('div');
+    slideDiv.className = `banner-slide ${index === 0 ? 'active' : ''}`;
+    slideDiv.innerHTML = `
+      <img src="${slide.image}" alt="${slide.title}">
+      <div class="banner-text">
+        <h2>${slide.title}</h2>
+        <p>${slide.text}</p>
+      </div>
+    `;
+    bannerContainer.appendChild(slideDiv);
+  });
+  
+  // Auto-rotate slides
+  let currentSlide = 0;
+  setInterval(() => {
+    const slides = bannerContainer.querySelectorAll('.banner-slide');
+    slides[currentSlide].classList.remove('active');
+    currentSlide = (currentSlide + 1) % slides.length;
+    slides[currentSlide].classList.add('active');
+  }, 5000); // Change slide every 5 seconds
+}
+
+// Initialize banner when page loads
+initBannerSlideshow();
+  const cartCount = document.getElementById("cart-count");
+  const puppiesGrid = document.getElementById("puppies");
+  puppiesGrid.innerHTML = "";
+
+  // Function to get cart from localStorage
+  function getCart() {
+    return JSON.parse(localStorage.getItem("cart")) || [];
+  }
+
+  // Function to save cart to localStorage
+  function saveCart(cart) {
+    localStorage.setItem("cart", JSON.stringify(cart));
+    cartCount.textContent = cart.length;
+  }
+
+  // Initialize cart from localStorage
+  const cart = getCart();
+  cartCount.textContent = cart.length;
+
+  if (typeof puppies !== "undefined") {
+    puppies.forEach(pup => {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      // Check if puppy is already in cart
+      const isInCart = cart.some(item => item.id === pup.id);
+
+      // IMAGE WRAPPER WITH REVIEW OVERLAY
+      const imageWrapper = document.createElement("div");
+      imageWrapper.className = "card-image-wrapper";
+
+      // First image of gallery
+      imageWrapper.innerHTML = `<img src="${pup.gallery[0]}" alt="${pup.name}" class="${pup.sold ? 'sold-img' : ''}">`;
+
+      // Sold overlay review
+      if(pup.sold && pup.review) {
+        const overlay = document.createElement("div");
+        overlay.className = "review-overlay";
+        overlay.innerHTML = `<p>${pup.review}</p>`;
+        imageWrapper.appendChild(overlay);
+      }
+
+      // Sold badge
+      if(pup.sold){
+        const soldBadge = document.createElement("div");
+        soldBadge.className = "sold";
+        soldBadge.textContent = "SOLD";
+        imageWrapper.appendChild(soldBadge);
+      }
+
+      card.appendChild(imageWrapper);
+
+      // INFO DIV
+const infoDiv = document.createElement("div");
+infoDiv.style.padding = "10px";
+infoDiv.innerHTML = `
+  <h3>${pup.name}</h3>
+ <div class="color">Color: ${pup.color}</div>
+  <p>Gender: ${pup.gender}</p>
+  <p class="price">$${pup.price}</p>
+  ${!pup.sold ? (isInCart ? '<button class="added" disabled>Added</button>' : '<button class="add-to-cart">Add to Cart</button>') : ''}
+`;
+card.appendChild(infoDiv);
+
+      // Add to cart button
+      const addBtn = infoDiv.querySelector(".add-to-cart");
+      if(addBtn){
+        addBtn.addEventListener("click", e => {
+          e.stopPropagation();
+          
+          // Check if puppy is already in cart
+          const updatedCart = getCart();
+          if (!updatedCart.some(item => item.id === pup.id)) {
+            updatedCart.push(pup);
+            saveCart(updatedCart);
+            
+            // Replace button with "Added"
+            addBtn.className = "added";
+            addBtn.textContent = "Added";
+            addBtn.disabled = true;
+            
+            alert(`${pup.name} added to cart!`);
+          } else {
+            alert(`${pup.name} is already in your cart!`);
+          }
+        });
+      }
+
+      // Slideshow for available puppies
+      if(!pup.sold && pup.gallery.length > 1){
+        let imgIndex = 0;
+        const imgElement = imageWrapper.querySelector('img');
+        setInterval(() => {
+          imgIndex = (imgIndex + 1) % pup.gallery.length;
+          imgElement.src = pup.gallery[imgIndex];
+        }, 2500); // change every 2.5s
+      }
+
+      puppiesGrid.appendChild(card);
+    });
+  }
+
+  // NAV HIGHLIGHT
+  const sections = document.querySelectorAll("section[id]");
+  const navLinks = document.querySelectorAll(".nav-link");
+  window.addEventListener("scroll", () => {
+    let current = "";
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      if(pageYOffset >= sectionTop - 60) current = section.getAttribute("id");
+    });
+    navLinks.forEach(link => {
+      link.style.color = "white";
+      if(link.getAttribute("href") === "#" + current) link.style.color = "#ffcc00";
+    });
+  });
+</script>
+
+</body>
+</html>
