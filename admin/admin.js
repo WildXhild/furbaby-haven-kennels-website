@@ -137,10 +137,27 @@ function loadDogsTable() {
       <td>
         <button class="btn btn-secondary" onclick="editDog('${pup.id}')">Edit</button>
         <button class="btn btn-danger" onclick="deleteDog('${pup.id}')">Delete</button>
+        ${pup.sold ? `<button class="btn btn-success" onclick="toggleSoldStatus('${pup.id}', false)">Mark Available</button>` : `<button class="btn btn-primary" onclick="toggleSoldStatus('${pup.id}', true)">Mark Sold</button>`}
       </td>
     `;
     tbody.appendChild(row);
   });
+}
+
+// Toggle sold status quickly from the table
+function toggleSoldStatus(dogId, makeSold) {
+  const puppiesList = getPuppiesFromStorage();
+  const idx = puppiesList.findIndex(p => p.id === dogId);
+  if (idx === -1) {
+    showAlert('Puppy not found', 'error');
+    return;
+  }
+  puppiesList[idx].sold = !!makeSold;
+  // If marking sold and no review exists, set a default empty review
+  if (makeSold && !puppiesList[idx].review) puppiesList[idx].review = '';
+  savePuppiestoStorage(puppiesList);
+  showAlert(`${puppiesList[idx].name} status updated`, 'success');
+  loadDogsTable();
 }
 
 // Edit dog - open modal

@@ -148,3 +148,22 @@ const puppies = [
     price: 3000 
   },
 ];
+
+// Load puppies from localStorage if available, otherwise save default puppies
+(function() {
+  const stored = localStorage.getItem('puppiesCatalog');
+  if (stored) {
+    try {
+      const storedPuppies = JSON.parse(stored);
+      // Replace the puppies array with stored data
+      puppies.length = 0;
+      puppies.push(...storedPuppies);
+    } catch (e) {
+      console.log('Could not parse stored puppies, using defaults');
+      localStorage.setItem('puppiesCatalog', JSON.stringify(puppies));
+    }
+  } else {
+    // First time: save default puppies to localStorage
+    localStorage.setItem('puppiesCatalog', JSON.stringify(puppies));
+  }
+})();
