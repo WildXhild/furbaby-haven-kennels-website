@@ -34,7 +34,7 @@ const puppies = [
     id: "p5", name: "Max", color: "Chocolate merle", 
     img: "images/pup5.jpeg", 
     gallery: ["images/pup5.jpeg","images/pup5_1.jpeg"], 
-    sold: false, 
+    sold: true, 
     gender: "Male 6Wks", 
     review: "",
     price: 3000 
