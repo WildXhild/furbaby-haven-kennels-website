@@ -4,5 +4,7 @@
   "description": "Netlify functions dependencies for Furbaby site",
   "dependencies": {
     "web-push": "^3.5.0"
+  ,
+  "node-fetch": "^2.6.7"
   }
 }
