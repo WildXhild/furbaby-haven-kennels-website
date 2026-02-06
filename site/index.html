@@ -246,9 +246,12 @@ Akc Registered</p>
   </div>
 
   <div id="chatPanel" class="chat-panel" style="position:fixed; right:20px; bottom:160px; width:360px; max-width:92%; height:500px; max-height:80vh; background:#fff; border-radius:10px; box-shadow:0 12px 32px rgba(0,0,0,0.25); transform:translateX(120%) scale(.98); opacity:0; transition:transform 300ms cubic-bezier(.2,.9,.2,1), opacity 220ms; z-index:9999; overflow:hidden; display:flex; flex-direction:column;">
-    <div style="padding:12px 14px; background:#111; color:#fff; display:flex; align-items:center; justify-content:space-between;">
+    <div style="padding:12px 14px; background:#111; color:#fff; display:flex; align-items:center; justify-content:space-between; gap:8px;">
       <div><strong>Chat with Admin</strong><div style="font-size:12px; color:#ddd;">We typically reply during business hours</div></div>
-      <button id="closeChat" style="background:transparent; border:none; color:#fff; font-size:18px; cursor:pointer;">&times;</button>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button id="minimizeChat" aria-label="Minimize chat" title="Minimize" style="background:transparent; border:none; color:#fff; font-size:18px; cursor:pointer;">—</button>
+        <button id="closeChat" aria-label="Close chat" title="Close" style="background:transparent; border:none; color:#fff; font-size:18px; cursor:pointer;">&times;</button>
+      </div>
     </div>
     <div id="chatMessages" style="flex:1; padding:12px; overflow:auto; background:#f7f7f7;"></div>
     <div style="padding:10px; border-top:1px solid #eee; display:flex; gap:8px;">
@@ -259,6 +262,11 @@ Akc Registered</p>
       <input id="chatInput" placeholder="Write a message..." style="flex:1;padding:10px;border:1px solid #ddd;border-radius:6px;" />
       <button id="sendChat" class="btn btn-primary">Send</button>
     </div>
+  </div>
+  <!-- Minimized chat bar (persistent) -->
+  <div id="chatMinimized" style="position:fixed; right:20px; bottom:110px; z-index:9999; display:none; align-items:center; gap:8px; background:#ffcc00; padding:8px 12px; border-radius:40px; box-shadow:0 8px 20px rgba(0,0,0,0.15); cursor:pointer;">
+    <button id="restoreChat" aria-label="Open chat" title="Open chat" style="background:transparent; border:none; font-size:16px;">💬 Chat</button>
+    <button id="closeMinimized" aria-label="Close minimized chat" title="Close" style="background:transparent; border:none; font-size:14px;">&times;</button>
   </div>
 </div>
 
@@ -318,17 +326,55 @@ function initBannerSlideshow() {
   const toggle = document.getElementById('chatToggle');
   const panel = document.getElementById('chatPanel');
   const closeBtn = document.getElementById('closeChat');
+  const minimizeBtn = document.getElementById('minimizeChat');
+  const minimizedBar = document.getElementById('chatMinimized');
+  const restoreBtn = document.getElementById('restoreChat');
+  const closeMinimizedBtn = document.getElementById('closeMinimized');
   const messagesEl = document.getElementById('chatMessages');
   const input = document.getElementById('chatInput');
   const sendBtn = document.getElementById('sendChat');
   const nameEl = document.getElementById('visitorName');
   const emailEl = document.getElementById('visitorEmail');
 
-  function openPanel() { panel.style.transform = 'translateX(0) scale(1)'; panel.style.opacity = '1'; }
-  function closePanel() { panel.style.transform = 'translateX(120%) scale(.98)'; panel.style.opacity = '0'; }
+  function openPanel() {
+    // ensure panel is visible (in case it was display:none when minimized)
+    if (minimizedBar) minimizedBar.style.display = 'none';
+    panel.style.display = 'flex';
+    // allow paint then animate
+    requestAnimationFrame(() => {
+      panel.style.transform = 'translateX(0) scale(1)';
+      panel.style.opacity = '1';
+    });
+  }
+
+  function closePanel() {
+    panel.style.transform = 'translateX(120%) scale(.98)';
+    panel.style.opacity = '0';
+    // fully hide after animation
+    setTimeout(() => { panel.style.display = 'none'; if (minimizedBar) minimizedBar.style.display = 'none'; }, 260);
+  }
+
+  function minimizePanel() {
+    // animate out and show minimized bar
+    panel.style.transform = 'translateX(120%) scale(.98)';
+    panel.style.opacity = '0';
+    setTimeout(() => { panel.style.display = 'none'; if (minimizedBar) minimizedBar.style.display = 'flex'; }, 260);
+  }
+
+  function restorePanel() {
+    if (minimizedBar) minimizedBar.style.display = 'none';
+    panel.style.display = 'flex';
+    requestAnimationFrame(() => {
+      panel.style.transform = 'translateX(0) scale(1)';
+      panel.style.opacity = '1';
+    });
+  }
 
   toggle.addEventListener('click', () => { openPanel(); });
   closeBtn.addEventListener('click', closePanel);
+  if (minimizeBtn) minimizeBtn.addEventListener('click', minimizePanel);
+  if (restoreBtn) restoreBtn.addEventListener('click', () => { restorePanel(); });
+  if (closeMinimizedBtn) closeMinimizedBtn.addEventListener('click', () => { if (minimizedBar) minimizedBar.style.display = 'none'; });
 
   // Conversation id stored in localStorage to continue
   const CONVO_KEY = 'chat_convo_id';
