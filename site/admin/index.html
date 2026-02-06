@@ -395,11 +395,33 @@
   
   <!-- ALERT MESSAGES -->
   <div id="alert" class="alert"></div>
+  <div id="adminActions" style="margin-bottom:20px; display:flex; gap:10px; flex-wrap:wrap;">
+    <button id="saveSettingsBtn" class="btn btn-primary">Save Settings (browser)</button>
+    <button id="exportPuppiesBtn" class="btn btn-success">Export puppies.js (download)</button>
+    <button id="copyPuppiesBtn" class="btn btn-secondary">Copy puppies.js to clipboard</button>
+    <div style="align-self:center; color:#666; font-size:13px;">Use Export to download an updated <strong>puppies.js</strong> file to commit to your GitHub repo so changes persist across deployments.</div>
+  </div>
+  <div id="githubActions" style="margin-bottom:20px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+    <input id="ghOwner" placeholder="GitHub owner (username or org)" style="padding:8px;border:1px solid #ddd;border-radius:5px;" />
+    <input id="ghRepo" placeholder="Repository name" style="padding:8px;border:1px solid #ddd;border-radius:5px;" />
+    <input id="ghBranch" placeholder="New branch name (optional)" style="padding:8px;border:1px solid #ddd;border-radius:5px;" />
+    <input id="ghPath" placeholder="File path (default: site/puppies.js)" style="padding:8px;border:1px solid #ddd;border-radius:5px;" />
+    <input id="ghToken" type="password" placeholder="GitHub Personal Access Token" style="padding:8px;border:1px solid #ddd;border-radius:5px; min-width:260px;" />
+    <button id="createPRBtn" class="btn btn-primary">Create PR (push puppies.js)</button>
+    <div style="width:100%; color:#666; font-size:12px;">Tip: Provide a GitHub token with `repo` scope. Token is used only in your browser session.</div>
+  </div>
+  <div id="serverPush" style="margin-bottom:20px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+    <input id="serverUrl" placeholder="Server function URL (default: /.netlify/functions/update-puppies)" style="padding:8px;border:1px solid #ddd;border-radius:5px; min-width:320px;" />
+    <input id="adminPanelPassword" type="password" placeholder="Admin panel password" style="padding:8px;border:1px solid #ddd;border-radius:5px;" />
+    <button id="serverPushBtn" class="btn btn-primary">Push via Server (recommended)</button>
+    <div style="width:100%; color:#666; font-size:12px;">If your site is hosted on Netlify, set `GITHUB_TOKEN` and `ADMIN_PASSWORD` in your Netlify environment and leave Server URL blank.</div>
+  </div>
   
   <!-- TABS -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('add-dog')">Add New Puppy</button>
     <button class="tab-btn" onclick="switchTab('manage-dogs')">Manage Puppies</button>
+    <button class="tab-btn" onclick="switchTab('live-chat')">Live Chat</button>
   </div>
   
   <!-- TAB 1: ADD NEW DOG -->
@@ -478,6 +500,31 @@
         <tbody id="dogsTableBody">
         </tbody>
       </table>
+    </div>
+  </div>
+  
+  <!-- TAB 3: LIVE CHAT -->
+  <div id="live-chat" class="tab-content">
+    <h2>Live Chat</h2>
+    <p style="color:#666;">View visitor conversations and reply. Use admin panel password to authorize replies.</p>
+    <div style="display:flex; gap:12px; margin-bottom:12px; align-items:center;">
+      <input id="adminChatOwner" placeholder="GitHub owner (optional)" style="padding:8px;border:1px solid #ddd;border-radius:5px;" />
+      <input id="adminChatRepo" placeholder="Repository name (optional)" style="padding:8px;border:1px solid #ddd;border-radius:5px;" />
+      <input id="adminChatPassword" type="password" placeholder="Admin panel password" style="padding:8px;border:1px solid #ddd;border-radius:5px;" />
+      <button id="refreshChatsBtn" class="btn btn-primary">Refresh</button>
+      <button id="adminEnableNotif" class="btn btn-secondary">Enable Notifications</button>
+    </div>
+
+    <div style="display:flex; gap:12px;">
+      <div style="width:40%; max-height:60vh; overflow:auto; border:1px solid #eee; padding:8px; border-radius:6px;" id="convoList"></div>
+      <div style="flex:1; max-height:60vh; overflow:auto; border:1px solid #eee; padding:8px; border-radius:6px; display:flex; flex-direction:column;" id="convoPane">
+        <div id="convoHeader" style="margin-bottom:8px;"></div>
+        <div id="convoMessages" style="flex:1; overflow:auto; margin-bottom:8px;"></div>
+        <div style="display:flex; gap:8px;">
+          <input id="replyInput" placeholder="Type a reply..." style="flex:1;padding:8px;border:1px solid #ddd;border-radius:6px;" />
+          <button id="sendReplyBtn" class="btn btn-primary">Send Reply</button>
+        </div>
+      </div>
     </div>
   </div>
   

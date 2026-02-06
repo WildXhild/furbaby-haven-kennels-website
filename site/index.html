@@ -167,8 +167,8 @@ Akc Registered</p>
     </div>
   </div>
   <nav id="top-nav">
-     <a href="#puppies" class="nav-link">Available Puppies</a>
-     <a href="#about" class="nav-link">About</a>
+    <a href="#about" class="nav-link">About</a>
+    <a href="#puppies" class="nav-link">Available Puppies</a>
     <a href="#contact" class="nav-link">Contact</a>
   </nav>
 </header>
@@ -223,7 +223,7 @@ Akc Registered</p>
     <h2>Contact Us</h2>
     <div style="margin-top:15px;">
       <a href="mailto:furbabyhavenkennels11@gmail.com" style="display:inline-block; background:#ffcc00; color:#111; padding:10px 20px; margin:5px; border-radius:8px; text-decoration:none; font-weight:bold;">Email</a>
-      <a href="https://www.facebook.com/share/1DaCtzuvew/?mibextid=wwXIfr" target="_blank" style="display:inline-block; background:#3638cc; color:white; padding:10px 20px; margin:5px; border-radius:8px; text-decoration:none; font-weight:bold;">Facebook</a>
+      <a href="https://www.facebook.com/share/1DaCtzuvew/?mibextid=wwXIfr" target="_blank" style="display:inline-block; background:#E1306C; color:white; padding:10px 20px; margin:5px; border-radius:8px; text-decoration:none; font-weight:bold;">Facebook</a>
       <a href="https://tiktok.com/@furbabykennels" target="_blank" style="display:inline-block; background:#000; color:white; padding:10px 20px; margin:5px; border-radius:8px; text-decoration:none; font-weight:bold;">TikTok</a>
       <a href="sms:+13372181591?body=Hello%20I%20am%20interested%20in%20your%20puppies" style="display:inline-block; background:#25D366; color:white; padding:10px 20px; margin:5px; border-radius:8px; text-decoration:none; font-weight:bold;">Text Us</a>
     </div>
@@ -236,6 +236,31 @@ Akc Registered</p>
   🛒 View Cart
   <span id="cart-count">0</span>
 </a>
+
+<!-- FLOATING CHAT BUTTON -->
+<div id="chat-root">
+  <div style="position:fixed; right:20px; bottom:90px; z-index:9999;">
+    <button id="chatToggle" aria-label="Open chat" title="Chat with us" style="background:#ffcc00; border:none; padding:14px 18px; border-radius:50px; box-shadow:0 6px 18px rgba(0,0,0,0.25); cursor:pointer; font-weight:bold; position:relative;">💬 Chat
+      <span id="chatBadge" style="position:absolute; top:-6px; right:-6px; background:#dc3545; color:#fff; padding:4px 7px; border-radius:50%; font-size:12px; display:none;">1</span>
+    </button>
+  </div>
+
+  <div id="chatPanel" class="chat-panel" style="position:fixed; right:20px; bottom:160px; width:360px; max-width:92%; height:500px; max-height:80vh; background:#fff; border-radius:10px; box-shadow:0 12px 32px rgba(0,0,0,0.25); transform:translateX(120%) scale(.98); opacity:0; transition:transform 300ms cubic-bezier(.2,.9,.2,1), opacity 220ms; z-index:9999; overflow:hidden; display:flex; flex-direction:column;">
+    <div style="padding:12px 14px; background:#111; color:#fff; display:flex; align-items:center; justify-content:space-between;">
+      <div><strong>Chat with Admin</strong><div style="font-size:12px; color:#ddd;">We typically reply during business hours</div></div>
+      <button id="closeChat" style="background:transparent; border:none; color:#fff; font-size:18px; cursor:pointer;">&times;</button>
+    </div>
+    <div id="chatMessages" style="flex:1; padding:12px; overflow:auto; background:#f7f7f7;"></div>
+    <div style="padding:10px; border-top:1px solid #eee; display:flex; gap:8px;">
+      <input id="visitorName" placeholder="Your name" style="flex:1;padding:8px;border:1px solid #ddd;border-radius:6px;" />
+      <input id="visitorEmail" placeholder="Email (optional)" style="flex:1;padding:8px;border:1px solid #ddd;border-radius:6px;" />
+    </div>
+    <div style="padding:10px; border-top:1px solid #eee; display:flex; gap:8px; align-items:center;">
+      <input id="chatInput" placeholder="Write a message..." style="flex:1;padding:10px;border:1px solid #ddd;border-radius:6px;" />
+      <button id="sendChat" class="btn btn-primary">Send</button>
+    </div>
+  </div>
+</div>
 
 <!-- SCRIPTS -->
 <script src="puppies.js"></script>
@@ -287,6 +312,185 @@ function initBannerSlideshow() {
     slides[currentSlide].classList.add('active');
   }, 5000); // Change slide every 5 seconds
 }
+
+// ===== Chat UI Logic =====
+(function(){
+  const toggle = document.getElementById('chatToggle');
+  const panel = document.getElementById('chatPanel');
+  const closeBtn = document.getElementById('closeChat');
+  const messagesEl = document.getElementById('chatMessages');
+  const input = document.getElementById('chatInput');
+  const sendBtn = document.getElementById('sendChat');
+  const nameEl = document.getElementById('visitorName');
+  const emailEl = document.getElementById('visitorEmail');
+
+  function openPanel() { panel.style.transform = 'translateX(0) scale(1)'; panel.style.opacity = '1'; }
+  function closePanel() { panel.style.transform = 'translateX(120%) scale(.98)'; panel.style.opacity = '0'; }
+
+  toggle.addEventListener('click', () => { openPanel(); });
+  closeBtn.addEventListener('click', closePanel);
+
+  // Conversation id stored in localStorage to continue
+  const CONVO_KEY = 'chat_convo_id';
+  let convoId = localStorage.getItem(CONVO_KEY) || null;
+
+  function timeAgo(ts){
+    const d = new Date(ts); const diff = Date.now() - d.getTime();
+    const seconds = Math.floor(diff/1000);
+    if (seconds < 60) return `${seconds}s`;
+    const minutes = Math.floor(seconds/60); if (minutes < 60) return `${minutes}m`;
+    const hours = Math.floor(minutes/60); if (hours < 24) return `${hours}h`;
+    const days = Math.floor(hours/24); return `${days}d`;
+  }
+
+  function renderMessages(convo) {
+    messagesEl.innerHTML = '';
+    if (!convo) return;
+    convo.messages.forEach(m => {
+      const el = document.createElement('div');
+      el.style.marginBottom = '8px';
+      const time = `<div style="font-size:10px;color:#666;margin-top:4px;">${timeAgo(m.ts)} • ${new Date(m.ts).toLocaleString()}</div>`;
+      if (m.from === 'admin') {
+        el.style.textAlign = 'left';
+        el.innerHTML = `<div style="display:inline-block; background:#111;color:#fff;padding:8px;border-radius:8px; max-width:85%">${escapeHtml(m.text)}</div>${time}`;
+      } else {
+        el.style.textAlign = 'right';
+        el.innerHTML = `<div style="display:inline-block; background:#ffcc00;color:#111;padding:8px;border-radius:8px; max-width:85%">${escapeHtml(m.text)}</div>${time}`;
+      }
+      messagesEl.appendChild(el);
+    });
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    // show badge if unread and last message is from admin
+    const badge = document.getElementById('chatBadge');
+    if (convo.unread && convo.messages.length && convo.messages[convo.messages.length-1].from === 'admin') {
+      badge.style.display = 'inline-block';
+      badge.textContent = '1';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  async function fetchConvo(id) {
+    try {
+      const res = await fetch('/.netlify/functions/chat', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action: 'get', convoId: id }) });
+      if (!res.ok) return null;
+      const d = await res.json();
+      return d.conversation;
+    } catch (e) { return null; }
+  }
+
+  async function sendMessage() {
+    const text = input.value.trim();
+    if (!text) return;
+    const name = nameEl.value.trim() || 'Visitor';
+    const email = emailEl.value.trim() || '';
+
+    const payload = { action: 'post', message: text, name, email };
+    if (convoId) payload.convoId = convoId;
+
+    sendBtn.disabled = true;
+    try {
+      const res = await fetch('/.netlify/functions/chat', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      const d = await res.json();
+      if (res.ok && d.convoId) {
+        convoId = d.convoId;
+        localStorage.setItem(CONVO_KEY, convoId);
+      }
+      // fetch latest
+      const convo = await fetchConvo(convoId);
+      renderMessages(convo);
+      input.value = '';
+    } catch (err) {
+      console.error(err);
+    }
+    sendBtn.disabled = false;
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+  // Poll for replies every 8s
+  setInterval(async () => {
+    if (!convoId) return;
+    const convo = await fetchConvo(convoId);
+    if (convo) renderMessages(convo);
+  }, 8000);
+
+  // ----- Browser notifications for visitor when admin replies -----
+  async function requestChatNotificationPermission() {
+    if (!('Notification' in window)) return false;
+    if (Notification.permission === 'granted') return true;
+    if (Notification.permission === 'denied') return false;
+    try {
+      const perm = await Notification.requestPermission();
+      return perm === 'granted';
+    } catch (e) { return false; }
+  }
+
+  async function maybeNotifyAdminReply(convo) {
+    if (!convo) return;
+    // find last admin message
+    const adminMsgs = convo.messages.filter(m => m.from === 'admin');
+    if (!adminMsgs.length) return;
+    const lastAdmin = adminMsgs[adminMsgs.length - 1];
+    const key = `chat_last_ts_${convo.id}`;
+    const seen = localStorage.getItem(key);
+    if (seen && new Date(seen).getTime() >= new Date(lastAdmin.ts).getTime()) return; // already seen
+
+    // Only notify if page is hidden (background) or user prefers
+    const shouldNotify = document.hidden || true;
+    if (shouldNotify && ('Notification' in window) && Notification.permission === 'granted') {
+      try {
+        const n = new Notification('Reply from admin', { body: lastAdmin.text, tag: convo.id });
+        n.onclick = function() { window.focus(); openPanel(); };
+      } catch (e) { /* ignore */ }
+    }
+
+    // update last seen timestamp so we don't spam
+    localStorage.setItem(key, lastAdmin.ts);
+  }
+
+  // integrate notification check into render flow
+  const originalRenderMessages = renderMessages;
+  renderMessages = function(convo) {
+    originalRenderMessages(convo);
+    maybeNotifyAdminReply(convo).catch(()=>{});
+  }
+
+  // Request permission when chat is first opened
+  toggle.addEventListener('click', async () => {
+    await requestChatNotificationPermission();
+    // register service worker and subscribe to push
+    if ('serviceWorker' in navigator) {
+      try {
+        const reg = await navigator.serviceWorker.register('/sw.js');
+        const vapidRes = await fetch('/.netlify/functions/get-vapid');
+        const vapid = (await vapidRes.json()).publicKey;
+        if (vapid && reg.pushManager) {
+          const sub = await reg.pushManager.getSubscription() || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(vapid) });
+          // send subscription to server to store
+          await fetch('/.netlify/functions/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'subscribe', subscription: sub, role:'visitor' }) });
+        }
+      } catch (e) { console.error('SW/subscribe error', e); }
+    }
+    if (convoId) { const c = await fetchConvo(convoId); renderMessages(c); }
+  });
+
+  // Helper: convert VAPID key
+  function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
+    return outputArray;
+  }
+
+  // Try to load existing convo on open
+  toggle.addEventListener('click', async () => { if (convoId) { const c = await fetchConvo(convoId); renderMessages(c); } });
+})();
 
 // Initialize banner when page loads
 initBannerSlideshow();

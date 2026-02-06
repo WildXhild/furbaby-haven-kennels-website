@@ -1,0 +1,8 @@
+{
+  "name": "furbaby-site-functions",
+  "version": "1.0.0",
+  "description": "Netlify functions dependencies for Furbaby site",
+  "dependencies": {
+    "web-push": "^3.5.0"
+  }
+}
