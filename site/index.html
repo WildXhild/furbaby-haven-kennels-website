@@ -409,25 +409,15 @@ card.appendChild(infoDiv);
     });
   });
 </script>
-<!-- POPUP -->
-<div id="popup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center;">
+</body>
+<div style="height:100px;"></div>
+<div style="background:#000;color:#fff;padding:12px;text-align:center;position:fixed;top:0;width:100%;z-index:1000;">
 
-  <div style="background:white; padding:30px; border-radius:10px; max-width:400px; text-align:center; position:relative;">
+<span>🐶 New litters coming soon — Join our waiting list</span>
 
-    <span onclick="closePopup()" style="position:absolute; top:10px; right:15px; cursor:pointer; font-size:20px;">&times;</span>
+<div style="margin-top:8px;">
 
- <!-- POPUP -->
-<div id="popup" style="display:none;">
-  
-  <div id="popup-overlay"></div>
-
-  <div id="popup-box">
-    <span id="close-btn">&times;</span>
-
-    <h2>🐶 Join Our Puppy Waiting List</h2>
-    <p>Be the first to know when new puppies are available.</p>
-
-    <div id="mc_embed_shell">
+  <div id="mc_embed_shell">
       <link href="//cdn-images.mailchimp.com/embedcode/classic-061523.css" rel="stylesheet" type="text/css">
   <style type="text/css">
         #mc_embed_signup{background:#fff; false;clear:left; font:14px Helvetica,Arial,sans-serif; width: 600px;}
@@ -1187,63 +1177,7 @@ card.appendChild(infoDiv);
       });
     });
     </script></div>
- </div>
 </div>
 
-<style>
-#popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.7);
-  z-index: 999;
-}
-
-#popup-box {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #fff;
-  padding: 25px;
-  width: 90%;
-  max-width: 400px;
-  border-radius: 10px;
-  text-align: center;
-  z-index: 1000;
-}
-
-#close-btn {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 22px;
-  cursor: pointer;
-}
-
-/* stop background scrolling */
-body.popup-open {
-  overflow: hidden;
-}
-</style>
-
-<script>
-function showPopup() {
-  document.getElementById("popup").style.display = "block";
-  document.body.classList.add("popup-open");
-}
-
-function closePopup() {
-  document.getElementById("popup").style.display = "none";
-  document.body.classList.remove("popup-open");
-}
-
-document.getElementById("close-btn").onclick = closePopup;
-document.getElementById("popup-overlay").onclick = closePopup;
-
-setTimeout(showPopup, 7000); // 7 seconds
-</script>
-</body>
+</div>
 </html>
