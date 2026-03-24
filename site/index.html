@@ -196,23 +196,230 @@ Akc Registered</p>
       </div>
     </div>
   </div> 
-  <hr style="margin:50px 0;">
-<section style="background:#f7f7f7;padding:40px;margin-top:30px;text-align:center;border-radius:10px;">
 
-<h2 style="font-size:28px;">🐶 Join Our Puppy Waiting List</h2>
 
-<p style="font-size:18px;max-width:600px;margin:auto;">
-Our litters are often reserved quickly. Join our waiting list to be the
-first notified when new English Bulldog puppies become available.
-</p>
+  <!-- ABOUT -->
+  <about style=" text-align:center;">
+  <div id="about" class="container info-section">
+    <h2>About Our Kennel</h2>
+    <p>
+     At Furbaby Haven Kennels, we are home-grown
+     English Bulldog specialists breeding bulldogs with care and affection.  
+     and today, our legendary lineage is found in 95% of rare-colored 
+     pedigrees nationwide.
+     Our goal is to produce healthy, high-quality Bulldogs
+     with strong, compact bodies and the best conformation characteristics.
+     By blending iconic bloodlines with a focus on placid, 
+     gentle personalities, we ensure our puppies are the perfect 
+     fit for families. As a global household name, 
+     we ship via puppy nanny to the USA, Australia, UAE, Canada, and beyond. 
+     We are dedicated to producing the best bulldogs for the best families, like yours.
 
-<p style="color:#555;margin-top:10px;">
-✔ Early access to new litters<br>
-✔ Puppy photos & updates<br>
-✔ No spam — puppy updates only
-</p>
+    </p>
+  </div>
+  </about>
+  
+<!-- FOOTER -->
+<footer style="background:#111; color:#fff; padding:30px; text-align:center;">
+  <section id="contact">
+    <h2>Contact Us</h2>
+    <div style="margin-top:15px;">
+      <a href="mailto:furbabyhavenkennels11@gmail.com" style="display:inline-block; background:#ffcc00; color:#111; padding:10px 20px; margin:5px; border-radius:8px; text-decoration:none; font-weight:bold;">Email</a>
+      <a href="https://www.facebook.com/share/1DaCtzuvew/?mibextid=wwXIfr" target="_blank" style="display:inline-block; background:#E1306C; color:white; padding:10px 20px; margin:5px; border-radius:8px; text-decoration:none; font-weight:bold;">Facebook</a>
+      <a href="https://tiktok.com/@furbabykennels" target="_blank" style="display:inline-block; background:#000; color:white; padding:10px 20px; margin:5px; border-radius:8px; text-decoration:none; font-weight:bold;">TikTok</a>
+      <a href="sms:+17135197851?body=Hello%20I%20am%20interested%20in%20your%20puppies" style="display:inline-block; background:#25D366; color:white; padding:10px 20px; margin:5px; border-radius:8px; text-decoration:none; font-weight:bold;">Text Us</a>
+    </div>
+    <p style="margin-top:20px; font-size:14px;">© 2025 FURBABY HAVEN KENNELS. Houston, TX📍. All rights reserved.</p>
+  </section>
+</footer>
 
-<div id="mc_embed_shell">
+<!-- FLOATING CART BUTTON -->
+<a href="checkout.html" class="cart">
+  🛒 View Cart
+  <span id="cart-count">0</span>
+</a>
+
+<!-- SCRIPTS -->
+<script src="puppies.js"></script>
+<script>
+  // CART FUNCTIONALITY
+  // BANNER SLIDESHOW
+function initBannerSlideshow() {
+  const bannerContainer = document.getElementById("banner-slideshow");
+  
+  // Slides data - customize these images and texts
+  const slides = [
+    {
+      image: 'images/banner1.jpg',
+      title: 'Isaiah 11:6',
+      text: '“The wolf will live with the lamb, the leopard will lie down with the goat, the calf and the lion and the yearling together; and a little child will lead them.”'
+    },
+    {
+      image: 'images/banner2.jpg',
+      title: 'Job 12:7–10',
+      text: '“Ask the animals, and they will teach you… In his hand is the life of every creature and the breath of all mankind.”'
+    },
+    {
+      image: 'images/banner3.jpg',
+      title: 'Psalm 150:5',
+      text: '"Peter son of Simon, Lovest thou me? Yes lord, Feed my Lambs"'
+    }
+  ];
+  
+  // Create slides
+  slides.forEach((slide, index) => {
+    const slideDiv = document.createElement('div');
+    slideDiv.className = `banner-slide ${index === 0 ? 'active' : ''}`;
+    slideDiv.innerHTML = `
+      <img src="${slide.image}" alt="${slide.title}">
+      <div class="banner-text">
+        <h2>${slide.title}</h2>
+        <p>${slide.text}</p>
+      </div>
+    `;
+    bannerContainer.appendChild(slideDiv);
+  });
+  
+  // Auto-rotate slides
+  let currentSlide = 0;
+  setInterval(() => {
+    const slides = bannerContainer.querySelectorAll('.banner-slide');
+    slides[currentSlide].classList.remove('active');
+    currentSlide = (currentSlide + 1) % slides.length;
+    slides[currentSlide].classList.add('active');
+  }, 5000); // Change slide every 5 seconds
+}
+
+// Initialize banner when page loads
+initBannerSlideshow();
+  const cartCount = document.getElementById("cart-count");
+  const puppiesGrid = document.getElementById("puppies");
+  puppiesGrid.innerHTML = "";
+
+  // Function to get cart from localStorage
+  function getCart() {
+    return JSON.parse(localStorage.getItem("cart")) || [];
+  }
+
+  // Function to save cart to localStorage
+  function saveCart(cart) {
+    localStorage.setItem("cart", JSON.stringify(cart));
+    cartCount.textContent = cart.length;
+  }
+
+  // Initialize cart from localStorage
+  const cart = getCart();
+  cartCount.textContent = cart.length;
+
+  if (typeof puppies !== "undefined") {
+    puppies.forEach(pup => {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      // Check if puppy is already in cart
+      const isInCart = cart.some(item => item.id === pup.id);
+
+      // IMAGE WRAPPER WITH REVIEW OVERLAY
+      const imageWrapper = document.createElement("div");
+      imageWrapper.className = "card-image-wrapper";
+
+      // First image of gallery
+      imageWrapper.innerHTML = `<img src="${pup.gallery[0]}" alt="${pup.name}" class="${pup.sold ? 'sold-img' : ''}">`;
+
+      // Sold overlay review
+      if(pup.sold && pup.review) {
+        const overlay = document.createElement("div");
+        overlay.className = "review-overlay";
+        overlay.innerHTML = `<p>${pup.review}</p>`;
+        imageWrapper.appendChild(overlay);
+      }
+
+      // Sold badge
+      if(pup.sold){
+        const soldBadge = document.createElement("div");
+        soldBadge.className = "sold";
+        soldBadge.textContent = "SOLD";
+        imageWrapper.appendChild(soldBadge);
+      }
+
+      card.appendChild(imageWrapper);
+
+      // INFO DIV
+const infoDiv = document.createElement("div");
+infoDiv.style.padding = "10px";
+infoDiv.innerHTML = `
+  <h3>${pup.name}</h3>
+ <div class="color">Color: ${pup.color}</div>
+  <p>Gender: ${pup.gender}</p>
+  <p class="price">$${pup.price}</p>
+  ${!pup.sold ? (isInCart ? '<button class="added" disabled>Added</button>' : '<button class="add-to-cart">Add to Cart</button>') : ''}
+`;
+card.appendChild(infoDiv);
+
+      // Add to cart button
+      const addBtn = infoDiv.querySelector(".add-to-cart");
+      if(addBtn){
+        addBtn.addEventListener("click", e => {
+          e.stopPropagation();
+          
+          // Check if puppy is already in cart
+          const updatedCart = getCart();
+          if (!updatedCart.some(item => item.id === pup.id)) {
+            updatedCart.push(pup);
+            saveCart(updatedCart);
+            
+            // Replace button with "Added"
+            addBtn.className = "added";
+            addBtn.textContent = "Added";
+            addBtn.disabled = true;
+            
+            alert(`${pup.name} added to cart!`);
+          } else {
+            alert(`${pup.name} is already in your cart!`);
+          }
+        });
+      }
+
+      // Slideshow for available puppies
+      if(!pup.sold && pup.gallery.length > 1){
+        let imgIndex = 0;
+        const imgElement = imageWrapper.querySelector('img');
+        setInterval(() => {
+          imgIndex = (imgIndex + 1) % pup.gallery.length;
+          imgElement.src = pup.gallery[imgIndex];
+        }, 2500); // change every 2.5s
+      }
+
+      puppiesGrid.appendChild(card);
+    });
+  }
+
+  // NAV HIGHLIGHT
+  const sections = document.querySelectorAll("section[id]");
+  const navLinks = document.querySelectorAll(".nav-link");
+  window.addEventListener("scroll", () => {
+    let current = "";
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      if(pageYOffset >= sectionTop - 60) current = section.getAttribute("id");
+    });
+    navLinks.forEach(link => {
+      link.style.color = "white";
+      if(link.getAttribute("href") === "#" + current) link.style.color = "#ffcc00";
+    });
+  });
+</script>
+<!-- POPUP -->
+<div id="popup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center;">
+
+  <div style="background:white; padding:30px; border-radius:10px; max-width:400px; text-align:center; position:relative;">
+
+    <span onclick="closePopup()" style="position:absolute; top:10px; right:15px; cursor:pointer; font-size:20px;">&times;</span>
+
+    <h2>🐶 Join Our Puppy Waiting List</h2>
+    <p>Be the first to know when new puppies are available.</p>
+
+    <div id="mc_embed_shell">
       <link href="//cdn-images.mailchimp.com/embedcode/classic-061523.css" rel="stylesheet" type="text/css">
   <style type="text/css">
         #mc_embed_signup{background:#fff; false;clear:left; font:14px Helvetica,Arial,sans-serif; width: 600px;}
@@ -972,218 +1179,17 @@ first notified when new English Bulldog puppies become available.
       });
     });
     </script></div>
+ </div>
+</div>
 
-  <!-- ABOUT -->
-  <about style=" text-align:center;">
-  <div id="about" class="container info-section">
-    <h2>About Our Kennel</h2>
-    <p>
-     At Furbaby Haven Kennels, we are home-grown
-     English Bulldog specialists breeding bulldogs with care and affection.  
-     and today, our legendary lineage is found in 95% of rare-colored 
-     pedigrees nationwide.
-     Our goal is to produce healthy, high-quality Bulldogs
-     with strong, compact bodies and the best conformation characteristics.
-     By blending iconic bloodlines with a focus on placid, 
-     gentle personalities, we ensure our puppies are the perfect 
-     fit for families. As a global household name, 
-     we ship via puppy nanny to the USA, Australia, UAE, Canada, and beyond. 
-     We are dedicated to producing the best bulldogs for the best families, like yours.
-
-    </p>
-  </div>
-  </about>
-  
-<!-- FOOTER -->
-<footer style="background:#111; color:#fff; padding:30px; text-align:center;">
-  <section id="contact">
-    <h2>Contact Us</h2>
-    <div style="margin-top:15px;">
-      <a href="mailto:furbabyhavenkennels11@gmail.com" style="display:inline-block; background:#ffcc00; color:#111; padding:10px 20px; margin:5px; border-radius:8px; text-decoration:none; font-weight:bold;">Email</a>
-      <a href="https://www.facebook.com/share/1DaCtzuvew/?mibextid=wwXIfr" target="_blank" style="display:inline-block; background:#E1306C; color:white; padding:10px 20px; margin:5px; border-radius:8px; text-decoration:none; font-weight:bold;">Facebook</a>
-      <a href="https://tiktok.com/@furbabykennels" target="_blank" style="display:inline-block; background:#000; color:white; padding:10px 20px; margin:5px; border-radius:8px; text-decoration:none; font-weight:bold;">TikTok</a>
-      <a href="sms:+17135197851?body=Hello%20I%20am%20interested%20in%20your%20puppies" style="display:inline-block; background:#25D366; color:white; padding:10px 20px; margin:5px; border-radius:8px; text-decoration:none; font-weight:bold;">Text Us</a>
-    </div>
-    <p style="margin-top:20px; font-size:14px;">© 2025 FURBABY HAVEN KENNELS. Houston, TX📍. All rights reserved.</p>
-  </section>
-</footer>
-
-<!-- FLOATING CART BUTTON -->
-<a href="checkout.html" class="cart">
-  🛒 View Cart
-  <span id="cart-count">0</span>
-</a>
-
-<!-- SCRIPTS -->
-<script src="puppies.js"></script>
 <script>
-  // CART FUNCTIONALITY
-  // BANNER SLIDESHOW
-function initBannerSlideshow() {
-  const bannerContainer = document.getElementById("banner-slideshow");
-  
-  // Slides data - customize these images and texts
-  const slides = [
-    {
-      image: 'images/banner1.jpg',
-      title: 'Isaiah 11:6',
-      text: '“The wolf will live with the lamb, the leopard will lie down with the goat, the calf and the lion and the yearling together; and a little child will lead them.”'
-    },
-    {
-      image: 'images/banner2.jpg',
-      title: 'Job 12:7–10',
-      text: '“Ask the animals, and they will teach you… In his hand is the life of every creature and the breath of all mankind.”'
-    },
-    {
-      image: 'images/banner3.jpg',
-      title: 'Psalm 150:5',
-      text: '"Peter son of Simon, Lovest thou me? Yes lord, Feed my Lambs"'
-    }
-  ];
-  
-  // Create slides
-  slides.forEach((slide, index) => {
-    const slideDiv = document.createElement('div');
-    slideDiv.className = `banner-slide ${index === 0 ? 'active' : ''}`;
-    slideDiv.innerHTML = `
-      <img src="${slide.image}" alt="${slide.title}">
-      <div class="banner-text">
-        <h2>${slide.title}</h2>
-        <p>${slide.text}</p>
-      </div>
-    `;
-    bannerContainer.appendChild(slideDiv);
-  });
-  
-  // Auto-rotate slides
-  let currentSlide = 0;
-  setInterval(() => {
-    const slides = bannerContainer.querySelectorAll('.banner-slide');
-    slides[currentSlide].classList.remove('active');
-    currentSlide = (currentSlide + 1) % slides.length;
-    slides[currentSlide].classList.add('active');
-  }, 5000); // Change slide every 5 seconds
+function closePopup() {
+  document.getElementById("popup").style.display = "none";
 }
 
-// Initialize banner when page loads
-initBannerSlideshow();
-  const cartCount = document.getElementById("cart-count");
-  const puppiesGrid = document.getElementById("puppies");
-  puppiesGrid.innerHTML = "";
-
-  // Function to get cart from localStorage
-  function getCart() {
-    return JSON.parse(localStorage.getItem("cart")) || [];
-  }
-
-  // Function to save cart to localStorage
-  function saveCart(cart) {
-    localStorage.setItem("cart", JSON.stringify(cart));
-    cartCount.textContent = cart.length;
-  }
-
-  // Initialize cart from localStorage
-  const cart = getCart();
-  cartCount.textContent = cart.length;
-
-  if (typeof puppies !== "undefined") {
-    puppies.forEach(pup => {
-      const card = document.createElement("div");
-      card.className = "card";
-
-      // Check if puppy is already in cart
-      const isInCart = cart.some(item => item.id === pup.id);
-
-      // IMAGE WRAPPER WITH REVIEW OVERLAY
-      const imageWrapper = document.createElement("div");
-      imageWrapper.className = "card-image-wrapper";
-
-      // First image of gallery
-      imageWrapper.innerHTML = `<img src="${pup.gallery[0]}" alt="${pup.name}" class="${pup.sold ? 'sold-img' : ''}">`;
-
-      // Sold overlay review
-      if(pup.sold && pup.review) {
-        const overlay = document.createElement("div");
-        overlay.className = "review-overlay";
-        overlay.innerHTML = `<p>${pup.review}</p>`;
-        imageWrapper.appendChild(overlay);
-      }
-
-      // Sold badge
-      if(pup.sold){
-        const soldBadge = document.createElement("div");
-        soldBadge.className = "sold";
-        soldBadge.textContent = "SOLD";
-        imageWrapper.appendChild(soldBadge);
-      }
-
-      card.appendChild(imageWrapper);
-
-      // INFO DIV
-const infoDiv = document.createElement("div");
-infoDiv.style.padding = "10px";
-infoDiv.innerHTML = `
-  <h3>${pup.name}</h3>
- <div class="color">Color: ${pup.color}</div>
-  <p>Gender: ${pup.gender}</p>
-  <p class="price">$${pup.price}</p>
-  ${!pup.sold ? (isInCart ? '<button class="added" disabled>Added</button>' : '<button class="add-to-cart">Add to Cart</button>') : ''}
-`;
-card.appendChild(infoDiv);
-
-      // Add to cart button
-      const addBtn = infoDiv.querySelector(".add-to-cart");
-      if(addBtn){
-        addBtn.addEventListener("click", e => {
-          e.stopPropagation();
-          
-          // Check if puppy is already in cart
-          const updatedCart = getCart();
-          if (!updatedCart.some(item => item.id === pup.id)) {
-            updatedCart.push(pup);
-            saveCart(updatedCart);
-            
-            // Replace button with "Added"
-            addBtn.className = "added";
-            addBtn.textContent = "Added";
-            addBtn.disabled = true;
-            
-            alert(`${pup.name} added to cart!`);
-          } else {
-            alert(`${pup.name} is already in your cart!`);
-          }
-        });
-      }
-
-      // Slideshow for available puppies
-      if(!pup.sold && pup.gallery.length > 1){
-        let imgIndex = 0;
-        const imgElement = imageWrapper.querySelector('img');
-        setInterval(() => {
-          imgIndex = (imgIndex + 1) % pup.gallery.length;
-          imgElement.src = pup.gallery[imgIndex];
-        }, 2500); // change every 2.5s
-      }
-
-      puppiesGrid.appendChild(card);
-    });
-  }
-
-  // NAV HIGHLIGHT
-  const sections = document.querySelectorAll("section[id]");
-  const navLinks = document.querySelectorAll(".nav-link");
-  window.addEventListener("scroll", () => {
-    let current = "";
-    sections.forEach(section => {
-      const sectionTop = section.offsetTop;
-      if(pageYOffset >= sectionTop - 60) current = section.getAttribute("id");
-    });
-    navLinks.forEach(link => {
-      link.style.color = "white";
-      if(link.getAttribute("href") === "#" + current) link.style.color = "#ffcc00";
-    });
-  });
+setTimeout(function() {
+  document.getElementById("popup").style.display = "flex";
+}, 7000); // shows after 4 seconds
 </script>
-
 </body>
 </html>
